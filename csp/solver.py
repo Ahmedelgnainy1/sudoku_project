@@ -11,9 +11,11 @@ class Stats:
     removals: int = 0      # values deleted by AC-3
 
 class Solver:
-    def __init__(self, use_fc=False, use_ac3=False):
+    def __init__(self, use_fc=False, use_ac3=False, use_mrv=False, use_degree=False):
         self.use_fc = use_fc
         self.use_ac3 = use_ac3
+        self.use_mrv = use_mrv
+        self.use_degree = use_degree
         self.stats = Stats()
 
     def solve(self, grid):
@@ -41,16 +43,27 @@ class Solver:
                 return None            # an empty cell has no legal digit
         return domains
 
+    def _candidates(self, g, domains, i):
+        if self.use_fc:
+            return sorted(domains[i])
+        base = sorted(domains[i]) if self.use_ac3 else range(1, 10)
+        return [v for v in base if all(g[p] != v for p in PEERS[i])]
+
+    def _select(self, g, domains):
+        empties = [i for i in range(81) if g[i] == 0]
+        if not (self.use_mrv or self.use_degree):
+            return empties[0]              # static order (old behaviour)
+        def key(i):
+            dom = len(self._candidates(g, domains, i)) if self.use_mrv else 0
+            deg = sum(1 for p in PEERS[i] if g[p] == 0) if self.use_degree else 0
+            return (dom, -deg, i)          # fewest values, then most neighbours
+        return min(empties, key=key)
+
     def _backtrack(self, g, domains):
         if 0 not in g:
             return True
-        var = g.index(0)
-        if self.use_fc:
-            candidates = sorted(domains[var])
-        else:
-            base = sorted(domains[var]) if self.use_ac3 else range(1, 10)
-            candidates = [v for v in base
-                          if all(g[p] != v for p in PEERS[var])]
+        var = self._select(g, domains)
+        candidates = self._candidates(g, domains, var)
         for v in candidates:
             g[var] = v
             self.stats.assignments += 1
