@@ -1,15 +1,19 @@
 """Backtracking Sudoku solver with switchable inference."""
 from dataclasses import dataclass
 from csp.grid import PEERS, conflicts
+from csp.ac3 import ac3, initial_domains
 
 @dataclass
 class Stats:
     assignments: int = 0   # values placed during search
     backtracks: int = 0    # placed values undone
+    revisions: int = 0     # AC-3 revise() calls
+    removals: int = 0      # values deleted by AC-3
 
 class Solver:
-    def __init__(self, use_fc=False):
+    def __init__(self, use_fc=False, use_ac3=False):
         self.use_fc = use_fc
+        self.use_ac3 = use_ac3
         self.stats = Stats()
 
     def solve(self, grid):
@@ -24,6 +28,9 @@ class Solver:
         return g if self._backtrack(g, domains) else None
 
     def _initial_domains(self, g):
+        if self.use_ac3:
+            domains = initial_domains(g)
+            return domains if ac3(domains, self.stats) else None
         domains = [set(range(1, 10)) for _ in range(81)]
         if self.use_fc:
             for i in range(81):
@@ -41,7 +48,8 @@ class Solver:
         if self.use_fc:
             candidates = sorted(domains[var])
         else:
-            candidates = [v for v in range(1, 10)
+            base = sorted(domains[var]) if self.use_ac3 else range(1, 10)
+            candidates = [v for v in base
                           if all(g[p] != v for p in PEERS[var])]
         for v in candidates:
             g[var] = v
