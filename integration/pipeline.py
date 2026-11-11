@@ -33,7 +33,7 @@ def _step_cost(probs, cell, old, new):
     return max(0.0, -math.log(p_new) + math.log(p_old))
 
 def solve_reading(read_grid, probs, method="ucs", h=h_admissible,
-                  max_corr=3, top_k=3, solver_kw=None, max_goal_calls=None):
+                  max_corr=3, top_k=3, solver_kw=None, max_goal_calls=None, trace=None):
     kw = solver_kw or SOLVER_KW
     calls = [0]
     def goal(g):
@@ -44,7 +44,7 @@ def solve_reading(read_grid, probs, method="ucs", h=h_admissible,
             return False
         return Solver(**kw).solve(g) is not None
     try:
-        state, cost, sstats = search(read_grid, probs, goal, method, h, max_corr, top_k)
+        state, cost, sstats = search(read_grid, probs, goal, method, h, max_corr, top_k, trace)
     except GoalBudget:
         return Result("unreadable", goal_calls=calls[0], capped=True,
                       least_confident=least_confident_cells(read_grid, probs),

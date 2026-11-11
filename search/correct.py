@@ -45,8 +45,9 @@ def h_conflicts(read_grid, state, moves):
     return float(len(conflicts(apply(read_grid, state))))
 
 def search(read_grid, probs, goal, method="ucs", h=h_admissible,
-           max_corr=3, top_k=3):
-    """Return (state, cost, stats) or (None, None, stats). goal(grid) -> bool."""
+           max_corr=3, top_k=3, trace=None):
+    """Return (state, cost, stats) or (None, None, stats). goal(grid) -> bool.
+    If trace is a list, each expanded state is appended as (state, g, goal_ok)."""
     stats = SearchStats()
     moves = candidate_moves(read_grid, probs, top_k)
     tie = itertools.count()
@@ -63,7 +64,10 @@ def search(read_grid, probs, goal, method="ucs", h=h_admissible,
             continue
         explored.add(state)
         stats.expanded += 1
-        if goal(apply(read_grid, state)):
+        ok = goal(apply(read_grid, state))
+        if trace is not None:
+            trace.append((state, g, ok))
+        if ok:
             return state, g, stats
         if len(state) >= max_corr:
             continue
