@@ -3,6 +3,9 @@ from dataclasses import dataclass
 from csp.grid import PEERS, conflicts
 from csp.ac3 import ac3, initial_domains
 
+class BudgetExceeded(Exception):
+    pass
+
 @dataclass
 class Stats:
     assignments: int = 0   # values placed during search
@@ -11,11 +14,13 @@ class Stats:
     removals: int = 0      # values deleted by AC-3
 
 class Solver:
-    def __init__(self, use_fc=False, use_ac3=False, use_mrv=False, use_degree=False):
+    def __init__(self, use_fc=False, use_ac3=False, use_mrv=False, use_degree=False,
+                 max_assignments=None):
         self.use_fc = use_fc
         self.use_ac3 = use_ac3
         self.use_mrv = use_mrv
         self.use_degree = use_degree
+        self.max_assignments = max_assignments
         self.stats = Stats()
 
     def solve(self, grid):
@@ -67,6 +72,8 @@ class Solver:
         for v in candidates:
             g[var] = v
             self.stats.assignments += 1
+            if self.max_assignments and self.stats.assignments > self.max_assignments:
+                raise BudgetExceeded
             trail, wipeout = [], False
             if self.use_fc:
                 for p in PEERS[var]:
