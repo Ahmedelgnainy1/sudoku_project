@@ -1,4 +1,6 @@
-.venv/
+﻿.venv/
 __pycache__/
 .pytest_cache/
-data/raw/scratch.py
+data/raw/
+scratch.py
+notes_*.txt
