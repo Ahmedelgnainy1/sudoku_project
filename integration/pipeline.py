@@ -5,6 +5,9 @@ from csp.grid import conflicts
 from csp.solver import Solver
 from search.correct import search, apply, h_admissible
 
+class GoalBudget(Exception):
+    pass
+
 @dataclass
 class Result:
     status: str                      # "solved" or "unreadable"
@@ -16,6 +19,7 @@ class Result:
     goal_calls: int = 0
     least_confident: list = field(default_factory=list)
     message: str = ""
+    capped: bool = False
 
 SOLVER_KW = dict(use_fc=True, use_ac3=True, use_mrv=True)
 
@@ -29,15 +33,22 @@ def _step_cost(probs, cell, old, new):
     return max(0.0, -math.log(p_new) + math.log(p_old))
 
 def solve_reading(read_grid, probs, method="ucs", h=h_admissible,
-                  max_corr=3, top_k=3, solver_kw=None):
+                  max_corr=3, top_k=3, solver_kw=None, max_goal_calls=None):
     kw = solver_kw or SOLVER_KW
     calls = [0]
     def goal(g):
         calls[0] += 1
+        if max_goal_calls and calls[0] > max_goal_calls:
+            raise GoalBudget
         if conflicts(g):
             return False
         return Solver(**kw).solve(g) is not None
-    state, cost, sstats = search(read_grid, probs, goal, method, h, max_corr, top_k)
+    try:
+        state, cost, sstats = search(read_grid, probs, goal, method, h, max_corr, top_k)
+    except GoalBudget:
+        return Result("unreadable", goal_calls=calls[0], capped=True,
+                      least_confident=least_confident_cells(read_grid, probs),
+                      message="unreadable: goal-call budget exceeded")
     if state is None:
         return Result("unreadable", search_stats=sstats, goal_calls=calls[0],
                       least_confident=least_confident_cells(read_grid, probs),
