@@ -1,4 +1,4 @@
-# Handwritten Sudoku Reader and Solver: Search + CSP + Neural Network
+﻿# Handwritten Sudoku Reader and Solver: Search + CSP + Neural Network
 
 Name: ______  Course: Intelligent Systems, E-JUST  Project: P7
 
@@ -51,21 +51,21 @@ Switchable parts, each with counters:
 - AC-3: arc consistency run once before search. It removes values with no support and detects conflicts (two equal givens in a row empty a domain). Counters: revisions and removals.
 - MRV and degree heuristics: optional extras for choosing the next cell.
 
-Experiment 2 (50 puzzles per givens level, 5 seeds, mean ± std over seed means):
+Experiment 2 (50 puzzles per givens level, 5 seeds, mean Â± std over seed means):
 
 | Givens | Config | Assignments | Time (ms) | Capped runs |
 |---|---|---|---|---|
-| 25 | BT | 29275.6 ± 12532.2 | 283.7 | 3/50 |
-| 25 | BT+FC | 7979.0 ± 3581.1 | 29.6 | 0/50 |
-| 25 | BT+FC+AC3 | 5435.8 ± 3293.7 | 22.2 | 0/50 |
-| 30 | BT | 3731.3 ± 2582.7 | 35.9 | 0/50 |
-| 30 | BT+FC | 903.9 ± 295.3 | 3.7 | 0/50 |
-| 30 | BT+FC+AC3 | 261.9 ± 133.0 | 3.5 | 0/50 |
-| 35 | BT | 516.2 ± 236.2 | 5.2 | 0/50 |
-| 35 | BT+FC | 178.8 ± 46.2 | 0.8 | 0/50 |
-| 35 | BT+FC+AC3 | 68.9 ± 16.7 | 2.8 | 0/50 |
+| 25 | BT | 29275.6 Â± 12532.2 | 283.7 | 3/50 |
+| 25 | BT+FC | 7979.0 Â± 3581.1 | 29.6 | 0/50 |
+| 25 | BT+FC+AC3 | 5435.8 Â± 3293.7 | 22.2 | 0/50 |
+| 30 | BT | 3731.3 Â± 2582.7 | 35.9 | 0/50 |
+| 30 | BT+FC | 903.9 Â± 295.3 | 3.7 | 0/50 |
+| 30 | BT+FC+AC3 | 261.9 Â± 133.0 | 3.5 | 0/50 |
+| 35 | BT | 516.2 Â± 236.2 | 5.2 | 0/50 |
+| 35 | BT+FC | 178.8 Â± 46.2 | 0.8 | 0/50 |
+| 35 | BT+FC+AC3 | 68.9 Â± 16.7 | 2.8 | 0/50 |
 
-![alt text](image-1.png)
+![alt text](report_images/image-1.png)
 
 Assignments fall at every level: BT > FC > FC+AC3 (at 35 givens: 516, 179, 69). Time tells a different story on easy puzzles: at 35 givens FC+AC3 is slower than FC (2.8 vs 0.8 ms) because the one-off AC-3 pass costs about 8,400 revisions; at 30 givens it is a tie (3.5 vs 3.7 ms); at 25 givens AC-3 is faster (22.2 vs 29.6 ms). Counts alone can therefore mislead, so both measures are reported. Three of the 50 plain-BT runs at 25 givens hit the 200,000-assignment cap, so BT's 25-given numbers are lower bounds. Counter check: assignments minus backtracks equals the number of empty cells (46 at 35 givens).
 
@@ -83,29 +83,29 @@ Search was tested on a small example with a known answer (cheapest fix and its c
 
 ### Experiment 1: UCS vs Greedy vs A* (35-given puzzles, 100 puzzles per misread level, 5 seeds)
 
-Nodes expanded (mean ± std over seeds):
+Nodes expanded (mean Â± std over seeds):
 
 | m | UCS | Greedy | A* |
 |---|---|---|---|
 | 0 | 1.0 | 1.0 | 1.0 |
-| 1 | 3.4 ± 0.4 | 3.8 ± 2.3 | 2.5 ± 0.3 |
-| 2 | 13.5 ± 5.7 | 37.7 ± 6.4 | 7.8 ± 2.8 |
-| 3 | 85.3 ± 27.6 | 790.1 ± 309.2 | 52.0 ± 17.8 |
-| 4 | 3268.1 ± 118.6 | 3492.1 ± 256.3 | 3243.8 ± 108.9 |
+| 1 | 3.4 Â± 0.4 | 3.8 Â± 2.3 | 2.5 Â± 0.3 |
+| 2 | 13.5 Â± 5.7 | 37.7 Â± 6.4 | 7.8 Â± 2.8 |
+| 3 | 85.3 Â± 27.6 | 790.1 Â± 309.2 | 52.0 Â± 17.8 |
+| 4 | 3268.1 Â± 118.6 | 3492.1 Â± 256.3 | 3243.8 Â± 108.9 |
 
 Exact recovery rate (recovered solution equals the true solution):
 
 | m | UCS | Greedy | A* |
 |---|---|---|---|
 | 0 | 1.00 | 1.00 | 1.00 |
-| 1 | 0.94 ± 0.09 | 0.87 ± 0.08 | 0.94 ± 0.09 |
-| 2 | 0.82 ± 0.10 | 0.60 ± 0.12 | 0.82 ± 0.10 |
-| 3 | 0.85 ± 0.06 | 0.53 ± 0.12 | 0.85 ± 0.06 |
+| 1 | 0.94 Â± 0.09 | 0.87 Â± 0.08 | 0.94 Â± 0.09 |
+| 2 | 0.82 Â± 0.10 | 0.60 Â± 0.12 | 0.82 Â± 0.10 |
+| 3 | 0.85 Â± 0.06 | 0.53 Â± 0.12 | 0.85 Â± 0.06 |
 | 4 | 0.00 | 0.00 | 0.00 |
 
 Time at m = 3: UCS 310.8 ms, Greedy 3269.8 ms, A* 191.2 ms.
 
-![alt text](image-2.png)
+![alt text](report_images/image-2.png)
 
 Findings:
 - A* expands fewer nodes than UCS at every level with misreads (m = 3: 52.0 vs 85.3) with the same exact rate, as expected from an admissible heuristic. The intervals are close, so I describe it as "fewer nodes on average".
@@ -121,7 +121,7 @@ Demo (seed 1, 2 injected misreads, A*): the correction log fixed cells 21 (6 -> 
 
 Impossible case (seed 2, 4 injected misreads): the result is "unreadable: goal-call budget exceeded", with the 5 least confident cells listed. Only 2 of the 4 true misread cells (52 and 26) were in that list, so "least confident" is a hint, not a guaranteed pointer to the errors.
 
-![demo.png](image-3.png)
+![demo.png](report_images/image-3.png)
 
 ## 7. Experiment 3: NN on vs off
 
@@ -145,7 +145,7 @@ NN-guided (A*), no correction (one CSP check on the read grid), and random corre
 | 4 | None | 0.00 | 0.00 | 1.0 |
 | 4 | Random | 0.06 | 0.00 | 4849.1 |
 
-![exp3.png](image-4.png)
+![exp3.png](report_images/image-4.png)
 
 Without correction, any real misread almost always makes the puzzle unsolvable (the few "solved" cases are wrong puzzles). Random correction finds a solvable puzzle at m = 1 but needs about 402 checks against 2.5 for NN-guided, and its exact rate is lower (0.67); at m = 2-4 it mostly exhausts the cap. The NN probabilities are what make the search practical. The NN-guided rows match the A* rows of Experiment 1 (same puzzles and seeds). At m = 0 NN-guided is slower per puzzle (11.9 vs 5.5 ms) because of search overhead.
 
