@@ -49,3 +49,5 @@ Results (CSV + PNG) are written to results/. Experiments 1-3 use `models/cnn.pt`
 - "Solvable" is not "unique": the cheapest solvable fix can be a different valid puzzle.
 - vision/ and solve_image.py use external techniques (connected-component blob extraction with scipy, generated printed-digit tiles) and were only tested on a few clean pictures.
 - See DATA_DICTIONARY.md for real vs generated data.
+
+See examples/ for an example input picture and its solved output.
