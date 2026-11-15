@@ -10,6 +10,7 @@ from nn.calibration import softmax
 from integration.reader import read_mosaic
 from integration.pipeline import solve_reading
 from vision.extract import image_to_mosaic
+import os
 
 def show(g, mark=()):
     for r in range(9):
@@ -23,12 +24,14 @@ def main(path, debug=False):
     if debug:
         Image.fromarray((mosaic * 255).astype(np.uint8)).resize((756, 756), Image.NEAREST).save("debug_tiles.png")
         print("        wrote debug_tiles.png")
-    cnn = CNN(); cnn.load_state_dict(torch.load("models/cnn.pt")); cnn.eval()
+    wpath = "models/cnn_print.pt" if os.path.exists("models/cnn_print.pt") else "models/cnn.pt"
+    cnn = CNN(); cnn.load_state_dict(torch.load(wpath)); cnn.eval()
+    print("model:", wpath)
     grid, probs = read_mosaic(mosaic, lambda t: softmax(get_logits(cnn, t)))
     n = sum(1 for x in grid if x)
     print(f"STEP 3  Blank rule + CNN reads {n} digits (* = confidence below 0.90):")
     show(grid, [i for i in range(81) if grid[i] and probs[i].max() < 0.90])
-    if n < 17:
+    if n < 10:
         print("STOP    fewer than 17 digits read: not a valid Sudoku, or the picture is not supported")
         return
     print("STEP 4  Check the reading for conflicts")
