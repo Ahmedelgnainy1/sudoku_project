@@ -16,7 +16,27 @@ def show(g, mark=()):
     for r in range(9):
         print("  " + " ".join(f"{g[9*r+c] or '.'}{'*' if 9*r+c in mark else ' '}" for c in range(9)))
 
-def main(path, debug=False):
+def save_solution(read_grid, solution, path="solution.png"):
+    """Original digits in black, solver's digits in blue, on a 9x9 board."""
+    import matplotlib; matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    fig, ax = plt.subplots(figsize=(6, 6))
+    for i in range(10):
+        lw = 2.5 if i % 3 == 0 else 0.8
+        ax.plot([0, 9], [i, i], "k", lw=lw)
+        ax.plot([i, i], [0, 9], "k", lw=lw)
+    for cell in range(81):
+        r, c = divmod(cell, 9)
+        given = read_grid[cell] != 0
+        ax.text(c + 0.5, 8.5 - r, str(solution[cell]), ha="center", va="center",
+                fontsize=20, color="black" if given else "tab:blue",
+                fontweight="bold" if given else "normal")
+    ax.set_xlim(0, 9); ax.set_ylim(0, 9); ax.set_aspect("equal"); ax.axis("off")
+    ax.set_title("black = read from picture, blue = solved by the CSP")
+    fig.tight_layout(); fig.savefig(path, dpi=150); plt.close(fig)
+    print(f"        wrote {path}")
+
+def main(path, debug=False, save=False):
     print("STEP 1  Load the picture, make ink bright, trim the empty border")
     mosaic, info = image_to_mosaic(path)
     print(f"        size {info['original']} -> grid {info['cropped']}")
@@ -60,8 +80,10 @@ def main(path, debug=False):
           f"{s.assignments} assignments, {s.backtracks} backtracks, {s.revisions} AC-3 revisions")
     print("SOLUTION")
     show(res.solution)
+    if save:
+        save_solution(grid, res.solution)
     if n < 25:
         print("note: few givens, so several valid solutions may exist; this is one of them")
 
 if __name__ == "__main__":
-    main(sys.argv[1], "--debug" in sys.argv)
+    main(sys.argv[1], "--debug" in sys.argv, "--save" in sys.argv)
