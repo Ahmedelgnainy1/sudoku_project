@@ -10,13 +10,13 @@ from nn.calibration import softmax
 from integration.reader import read_mosaic
 from integration.pipeline import solve_reading
 from vision.extract import image_to_mosaic
-import os
+import os; os.makedirs("outputs", exist_ok=True)
 
 def show(g, mark=()):
     for r in range(9):
         print("  " + " ".join(f"{g[9*r+c] or '.'}{'*' if 9*r+c in mark else ' '}" for c in range(9)))
 
-def save_solution(read_grid, solution, path="solution.png"):
+def save_solution(read_grid, solution, path="outputs/solution.png"):
     """Original digits in black, solver's digits in blue, on a 9x9 board."""
     import matplotlib; matplotlib.use("Agg")
     import matplotlib.pyplot as plt
@@ -42,8 +42,8 @@ def main(path, debug=False, save=False):
     print(f"        size {info['original']} -> grid {info['cropped']}")
     print("STEP 2  Cut 9x9 cells, remove grid lines, keep the digit blob in each cell")
     if debug:
-        Image.fromarray((mosaic * 255).astype(np.uint8)).resize((756, 756), Image.NEAREST).save("debug_tiles.png")
-        print("        wrote debug_tiles.png")
+        Image.fromarray((mosaic * 255).astype(np.uint8)).resize((756, 756), Image.NEAREST).save("outputs/debug_tiles.png")
+        print("        wrote outputs/debug_tiles.png")
     wpath = "models/cnn_print.pt" if os.path.exists("models/cnn_print.pt") else "models/cnn.pt"
     cnn = CNN(); cnn.load_state_dict(torch.load(wpath)); cnn.eval()
     print("model:", wpath)

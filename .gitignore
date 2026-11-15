@@ -4,3 +4,5 @@ __pycache__/
 data/raw/
 scratch.py
 notes_*.txt
+notes/
+outputs/

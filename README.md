@@ -11,8 +11,8 @@ Always run commands from the project root (the folder that contains `models/`).
 
 ## 2. Solve your own Sudoku picture (extra, beyond the project PDF)
     python solve_image.py path\to\picture.png
-    python solve_image.py path\to\picture.png --debug      # saves debug_tiles.png (the 81 tiles the CNN sees)
-    python solve_image.py path\to\picture.png --save       # saves solution.png (black = read, blue = solved)
+    python solve_image.py path\to\picture.png --debug      # saves outputs/debug_tiles.png (the 81 tiles the CNN sees)
+    python solve_image.py path\to\picture.png --save       # saves outputs/solution.png (black = read, blue = solved)
 
 It prints each step: load and trim, cut cells and remove grid lines, CNN reading (* = confidence below 0.90), conflict check and AC-3, A* correction search, corrections made, CSP solution.
 
@@ -51,3 +51,4 @@ Results (CSV + PNG) are written to results/. Experiments 1-3 use `models/cnn.pt`
 - See DATA_DICTIONARY.md for real vs generated data.
 
 See examples/ for an example input picture and its solved output.
+
